@@ -38,4 +38,5 @@ lastfm-empty/build/
 # Binaries
 bin/
 */bin/
+*.apk
 
