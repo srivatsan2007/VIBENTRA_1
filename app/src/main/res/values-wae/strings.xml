@@ -348,7 +348,7 @@
     <string name="listen_together_smart_resync">Intelligenti Netzwerk-Nöisynchronisierig</string>
     <string name="listen_together_smart_resync_desc">Nach eme Verbindigsabbruch automatisch zum Host ufschliesse</string>
     <string name="spotify_import_title">Us Spotify importiere</string>
-    <string name="spotify_import_desc">Spotify verbinde, Abspiellischte uswähle und als lokali Echo-Music-Abspiellischte spiegle.</string>
+    <string name="spotify_import_desc">Spotify verbinde, Abspiellischte uswähle und als lokali Vibentra-Abspiellischte spiegle.</string>
     <string name="spotify_connect">Spotify verbinde</string>
     <string name="spotify_refresh">Spotify-Bibliothek aktualisiere</string>
     <string name="spotify_select_sources">Spotify-Abspiellischte uswähle</string>
@@ -392,7 +392,7 @@
     <string name="recognition_notification_processing">Wird erkannt…</string>
     <string name="recognition_notification_no_match">Kei Treffer gfunde</string>
     <string name="recognition_notification_failed">Erchennig fählgschlage</string>
-    <string name="listen_on_echo_music">Uf Echo Music lose</string>
+    <string name="listen_on_echo_music">Uf Vibentra lose</string>
     <string name="qs_tile_music_recognizer">Müsig erkenne</string>
     <string name="echo_brain_beta">Echo Brain (Beta)</string>
     <string name="echo_brain_enable">Echo Brain aktiviere</string>

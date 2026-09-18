@@ -425,7 +425,7 @@
     <string name="karaoke">کارائوکه</string>
     <string name="apple_music_style">اپل موزیک</string>
     <string name="apple_music_style_letter">اپل موزیک نسخه ۲ (حرف به حرف)</string>
-    <string name="echomusic_1">Echo Music (روان)</string>
+    <string name="echomusic_1">Vibentra (روان)</string>
     <string name="apple_music_lyrics_blur">تاری متن به سبک اپل موزیک</string>
     <string name="apple_music_lyrics_blur_desc">اعمال افکت تاری روی خطوط غیرفعال متن برای تمرکز عالی روی لاین در حال پخش</string>
     <string name="lyrics_v2_fluid">متن آهنگ نسخه ۲ (روان)</string>
@@ -467,7 +467,7 @@
     <string name="wrapped_ready_title">مرور سالانه شما آماده است!</string>
     <string name="wrapped_ready_subtitle">زمان دیدن چیزهایی که امسال عاشقشون بودی فرا رسید.</string>
     <string name="wrapped_thank_you">از همراهی و شنیدن شما سپاسگزاریم</string>
-    <string name="wrapped_special_thanks">تشکر ویژه از echodh برای خلق echomusic</string>
+    <string name="wrapped_special_thanks">Special thanks to SRIVATSAN R for creating Vibentra</string>
     <string name="wrapped_close">بستن مرور سالانه</string>
     <string name="wrapped_playlist_title">مرور سالانه %s شما</string>
     <string name="wrapped_create_playlist">ساخت لیست پخش</string>
@@ -777,7 +777,7 @@
     <string name="delete_from_history">حذف از تاریخچه</string>
     <string name="re_listen">گوش دادن مجدد</string>
     <string name="hold_to_recognize">برای تشخیص موسیقی، آیکون جستجو را نگه دارید</string>
-    <string name="play_on_app">پخش در Echo Music</string>
+    <string name="play_on_app">پخش در Vibentra</string>
     <string name="recognized_track">آهنگ شناسایی شده</string>
 
     <!-- CSV Import Strings -->

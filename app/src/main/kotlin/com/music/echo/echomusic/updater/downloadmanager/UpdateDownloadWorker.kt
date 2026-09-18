@@ -73,7 +73,7 @@ class UpdateDownloadWorker(private val context: Context, workerParams: WorkerPar
 
         val isZip = apkUrl.contains("nightly.link") || apkUrl.endsWith(".zip")
         val downloadFile =
-          if (isZip) File(downloadDir, "echo_temp.zip") else File(downloadDir, "echomusic.apk")
+          if (isZip) File(downloadDir, "vibentra_temp.zip") else File(downloadDir, "vibentra.apk")
         val outputStream = FileOutputStream(downloadFile)
 
         val buffer = ByteArray(8192)
@@ -126,7 +126,7 @@ class UpdateDownloadWorker(private val context: Context, workerParams: WorkerPar
 
         val finalFile =
           if (isZip) {
-            val targetApkFile = File(downloadDir, "echomusic.apk")
+            val targetApkFile = File(downloadDir, "vibentra.apk")
             var extracted = false
             try {
               ZipInputStream(downloadFile.inputStream()).use { zis ->

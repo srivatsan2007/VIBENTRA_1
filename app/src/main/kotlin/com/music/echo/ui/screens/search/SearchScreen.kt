@@ -400,7 +400,7 @@ fun SearchScreen(navController: NavController, pureBlack: Boolean) {
                 modifier = Modifier.padding(vertical = 12.dp),
                 selectedContentColor = MaterialTheme.colorScheme.onSurface,
                 unselectedContentColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                text = { Text("Echo Chart") }
+                text = { Text("Vibentra Chart") }
               )
               Tab(
                 selected = selectedTabIndex == 2,
