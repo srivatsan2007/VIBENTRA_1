@@ -169,7 +169,7 @@ Download the latest pre-compiled APK from the [Releases Page](https://github.com
 
    ```bash
    git clone https://github.com/srivatsan2007/VIBENTRA_1.git
-   cd Echo-Music
+   cd VIBENTRA_1
    ```
 
 2. **Configure Android SDK**
@@ -185,7 +185,7 @@ Download the latest pre-compiled APK from the [Releases Page](https://github.com
    Firebase is required for analytics and crash reporting. See the instructions in [SETUP.md](SETUP.md#3-configure-firebase-optional) for adding your `google-services.json`.
 
 4. **Build the Application**
-   Echo Music has two build variants: **FOSS** (without Google Play Services / Cast) and **GMS** (with Cast support).
+   Vibentra has two build variants: **FOSS** (without Google Play Services / Cast) and **GMS** (with Cast support).
 
    - To build the **FOSS** Universal Debug variant:
      ```bash
@@ -206,7 +206,7 @@ Download the latest pre-compiled APK from the [Releases Page](https://github.com
 
 ## Special Thanks
 
-Echo Music stands on the shoulders of several excellent open-source projects. Sincere thanks to:
+Vibentra stands on the shoulders of several excellent open-source projects. Sincere thanks to:
 
 | Project                                                                                                                   | Description                                         |
 | :------------------------------------------------------------------------------------------------------------------------ | :-------------------------------------------------- |
@@ -223,15 +223,15 @@ Echo Music stands on the shoulders of several excellent open-source projects. Si
 
 ### 1. 100% Free, Open-Source & Strictly Non-Commercial
 
-Echo Music is a fully open-source project (FOSS) created purely for educational purposes and personal use. We do not sell this application, nor do we monetize it in any way. There are no advertisements, no premium features, no subscriptions, and no hidden fees within the app. This project has absolutely no commercial value or financial intent.
+Vibentra is a fully open-source project (FOSS) created purely for educational purposes and personal use. We do not sell this application, nor do we monetize it in any way. There are no advertisements, no premium features, no subscriptions, and no hidden fees within the app. This project has absolutely no commercial value or financial intent.
 
 ### 2. A Custom Browser with Content Filtering
 
-Echo Music acts strictly as a specialized, third-party web browser and client. It simply parses the publicly available website content and APIs of YouTube and YouTube Music, rendering them in a custom user interface. The ad-free experience it provides is fundamentally no different from using a standard web browser (like Chrome, Firefox, or Brave) equipped with a common ad-blocking extension (such as uBlock Origin).
+Vibentra acts strictly as a specialized, third-party web browser and client. It simply parses the publicly available website content and APIs of YouTube and YouTube Music, rendering them in a custom user interface. The ad-free experience it provides is fundamentally no different from using a standard web browser (like Chrome, Firefox, or Brave) equipped with a common ad-blocking extension (such as uBlock Origin).
 
 ### 3. Support Content Creators
 
-We deeply respect the hard work of artists, musicians, and content creators. We strongly encourage all users to subscribe to [YouTube Premium](https://www.youtube.com/premium). Purchasing a Premium subscription is the best way to financially support the creators you listen to and ensure the continued growth of the platform. Echo Music is built as a proof-of-concept for developers and enthusiasts, not to harm creators' revenues.
+We deeply respect the hard work of artists, musicians, and content creators. We strongly encourage all users to subscribe to [YouTube Premium](https://www.youtube.com/premium). Purchasing a Premium subscription is the best way to financially support the creators you listen to and ensure the continued growth of the platform. Vibentra is built as a proof-of-concept for developers and enthusiasts, not to harm creators' revenues.
 
 ### 4. No Hosting of Copyrighted Material
 
@@ -239,7 +239,7 @@ We do not host, upload, distribute, or store any audio, video, or copyrighted me
 
 ### 5. User Responsibility & Legal Contact
 
-The software is provided "AS IS", without warranty of any kind. The developers of Echo Music do not encourage or condone piracy. Users are solely responsible for ensuring their usage of this app complies with their local copyright laws and the Terms of Service of the platforms they access.
+The software is provided "AS IS", without warranty of any kind. The developers of Vibentra do not encourage or condone piracy. Users are solely responsible for ensuring their usage of this app complies with their local copyright laws and the Terms of Service of the platforms they access.
 
 Because we do not host any media files, we cannot process DMCA takedown requests for audio or video content. However, if you represent a copyright holder or have legal concerns regarding the open-source code itself, please contact us via email at: [hello@echomusic.fun](mailto:hello@echomusic.fun)
 
