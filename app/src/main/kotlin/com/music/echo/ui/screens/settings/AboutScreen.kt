@@ -17,7 +17,6 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -25,11 +24,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.luminance
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -44,9 +40,6 @@ import echo.music.iad1tya.ui.component.IconButton
 import echo.music.iad1tya.ui.component.Material3SettingsGroup
 import echo.music.iad1tya.ui.component.Material3SettingsItem
 import echo.music.iad1tya.ui.utils.backToMain
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
-import org.json.JSONArray
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -59,32 +52,14 @@ fun AboutScreen(
   val uriHandler = LocalUriHandler.current
 
   data class Contributor(val login: String, val avatarUrl: String, val htmlUrl: String)
-  var contributors by remember { mutableStateOf<List<Contributor>>(emptyList()) }
-
-  LaunchedEffect(Unit) {
-    withContext(Dispatchers.IO) {
-      try {
-        val url = java.net.URL("https://api.github.com/repos/srivatsan2007/VIBENTRA_1/contributors")
-        val json = url.openStream().bufferedReader().use { it.readText() }
-        val array = JSONArray(json)
-        val list = mutableListOf<Contributor>()
-        for (i in 0 until array.length()) {
-          val obj = array.getJSONObject(i)
-          list.add(
-            Contributor(
-              obj.getString("login"),
-              obj.getString("avatar_url"),
-              obj.getString("html_url")
-            )
-          )
-        }
-        contributors = list
-      } catch (e: Exception) {
-        e.printStackTrace()
-      }
-    }
-  }
-  val context = LocalContext.current
+  val contributors =
+    listOf(
+      Contributor(
+        login = "srivatsan2007",
+        avatarUrl = "https://github.com/srivatsan2007.png",
+        htmlUrl = "https://github.com/srivatsan2007"
+      )
+    )
 
   Scaffold(
     modifier = Modifier.fillMaxSize(),
@@ -283,32 +258,17 @@ private fun AboutAppCard() {
           modifier = Modifier.padding(horizontal = 8.dp, vertical = 3.dp),
         )
       }
-      if (BuildConfig.DEBUG) {
-        Surface(
-          shape = RoundedCornerShape(8.dp),
-          color = MaterialTheme.colorScheme.error.copy(alpha = 0.10f),
-        ) {
-          Text(
-            text = "DEBUG",
-            style = MaterialTheme.typography.labelSmall,
-            color = MaterialTheme.colorScheme.error,
-            fontWeight = FontWeight.Medium,
-            modifier = Modifier.padding(horizontal = 8.dp, vertical = 3.dp),
-          )
-        }
-      } else {
-        Surface(
-          shape = RoundedCornerShape(8.dp),
-          color = MaterialTheme.colorScheme.secondary.copy(alpha = 0.10f),
-        ) {
-          Text(
-            text = BuildConfig.ARCHITECTURE.uppercase(),
-            style = MaterialTheme.typography.labelSmall,
-            color = MaterialTheme.colorScheme.secondary,
-            fontWeight = FontWeight.Medium,
-            modifier = Modifier.padding(horizontal = 8.dp, vertical = 3.dp),
-          )
-        }
+      Surface(
+        shape = RoundedCornerShape(8.dp),
+        color = MaterialTheme.colorScheme.secondary.copy(alpha = 0.10f),
+      ) {
+        Text(
+          text = "RELEASE",
+          style = MaterialTheme.typography.labelSmall,
+          color = MaterialTheme.colorScheme.secondary,
+          fontWeight = FontWeight.Medium,
+          modifier = Modifier.padding(horizontal = 8.dp, vertical = 3.dp),
+        )
       }
     }
   }
