@@ -154,6 +154,12 @@ fun getAllSearchableSettings(): List<SearchableSetting> {
       "settings/ai"
     ),
     SearchableSetting(
+      stringResource(R.string.ai_provider_requesty_help),
+      stringResource(R.string.ai_provider_requesty_help_desc),
+      "AI Lyrics Translation",
+      "settings/ai"
+    ),
+    SearchableSetting(
       stringResource(R.string.ai_provider_xai_help),
       stringResource(R.string.ai_provider_xai_help_desc),
       "AI Lyrics Translation",
@@ -1487,6 +1493,12 @@ fun getAllSearchableSettings(): List<SearchableSetting> {
       "settings/content"
     ),
     SearchableSetting(
+      stringResource(R.string.show_bottom_playlist),
+      stringResource(R.string.show_bottom_playlist_desc),
+      "Appearance",
+      "settings/appearance"
+    ),
+    SearchableSetting(
       stringResource(R.string.show_cached_playlist),
       stringResource(R.string.show_cached_playlist_desc),
       "Appearance",
@@ -1711,6 +1723,12 @@ fun getAllSearchableSettings(): List<SearchableSetting> {
     SearchableSetting(
       stringResource(R.string.wavy),
       stringResource(R.string.wavy_desc),
+      "Appearance",
+      "settings/appearance"
+    ),
+    SearchableSetting(
+      stringResource(R.string.wavy_play_pause),
+      stringResource(R.string.wavy_play_pause_desc),
       "Appearance",
       "settings/appearance"
     ),
@@ -1961,7 +1979,37 @@ fun getAllSearchableSettings(): List<SearchableSetting> {
       stringResource(R.string.enable_haptics),
       stringResource(R.string.enable_haptics_desc),
       "Appearance",
-      "settings/appearance"
+      "settings/appearance/haptics"
+    ),
+    SearchableSetting(
+      stringResource(R.string.haptics_intensity),
+      stringResource(R.string.haptics_intensity_desc),
+      "Appearance",
+      "settings/appearance/haptics"
+    ),
+    SearchableSetting(
+      stringResource(R.string.haptic_click_feedback),
+      stringResource(R.string.haptic_click_feedback_desc),
+      "Appearance",
+      "settings/appearance/haptics"
+    ),
+    SearchableSetting(
+      stringResource(R.string.haptic_long_press_feedback),
+      stringResource(R.string.haptic_long_press_feedback_desc),
+      "Appearance",
+      "settings/appearance/haptics"
+    ),
+    SearchableSetting(
+      stringResource(R.string.haptic_scroll_edge_feedback),
+      stringResource(R.string.haptic_scroll_edge_feedback_desc),
+      "Appearance",
+      "settings/appearance/haptics"
+    ),
+    SearchableSetting(
+      stringResource(R.string.haptic_slider_feedback),
+      stringResource(R.string.haptic_slider_feedback_desc),
+      "Appearance",
+      "settings/appearance/haptics"
     ),
     SearchableSetting(
       stringResource(R.string.listen_together_username),
@@ -2104,6 +2152,126 @@ fun getAllSearchableSettings(): List<SearchableSetting> {
     ),
 
     // Hardcoded Settings Missed by Generator
+    SearchableSetting(
+      "Liquid Glass",
+      "Real-time backdrop blur effect for the player",
+      "Appearance",
+      "settings/appearance/liquidglass"
+    ),
+    SearchableSetting(
+      stringResource(R.string.floating_nav_bar),
+      stringResource(R.string.floating_nav_bar_desc),
+      "Liquid Glass",
+      "settings/appearance/liquidglass"
+    ),
+    SearchableSetting(
+      stringResource(R.string.liquid_glass_global_enabled),
+      stringResource(R.string.liquid_glass_global_enabled_desc),
+      "Liquid Glass",
+      "settings/appearance/liquidglass"
+    ),
+    SearchableSetting(
+      stringResource(R.string.liquid_glass_vibrancy),
+      stringResource(R.string.liquid_glass_vibrancy_desc),
+      "Liquid Glass",
+      "settings/appearance/liquidglass"
+    ),
+    SearchableSetting(
+      stringResource(R.string.liquid_glass_blur_radius),
+      stringResource(R.string.liquid_glass_blur_radius_desc),
+      "Liquid Glass",
+      "settings/appearance/liquidglass"
+    ),
+    SearchableSetting(
+      stringResource(R.string.liquid_glass_lens_height),
+      stringResource(R.string.liquid_glass_lens_height_desc),
+      "Liquid Glass",
+      "settings/appearance/liquidglass"
+    ),
+    SearchableSetting(
+      stringResource(R.string.liquid_glass_lens_amount),
+      stringResource(R.string.liquid_glass_lens_amount_desc),
+      "Liquid Glass",
+      "settings/appearance/liquidglass"
+    ),
+    SearchableSetting(
+      stringResource(R.string.liquid_glass_chromatic_aberration),
+      stringResource(R.string.liquid_glass_chromatic_aberration_desc),
+      "Liquid Glass",
+      "settings/appearance/liquidglass"
+    ),
+    SearchableSetting(
+      stringResource(R.string.liquid_glass_depth_effect),
+      stringResource(R.string.liquid_glass_depth_effect_desc),
+      "Liquid Glass",
+      "settings/appearance/liquidglass"
+    ),
+    SearchableSetting(
+      stringResource(R.string.liquid_glass_surface_opacity),
+      stringResource(R.string.liquid_glass_surface_opacity_desc),
+      "Liquid Glass",
+      "settings/appearance/liquidglass"
+    ),
+    SearchableSetting(
+      stringResource(R.string.liquid_glass_surface_tint),
+      stringResource(R.string.liquid_glass_surface_tint_desc),
+      "Liquid Glass",
+      "settings/appearance/liquidglass"
+    ),
+    SearchableSetting(
+      stringResource(R.string.liquid_glass_text_color),
+      stringResource(R.string.liquid_glass_text_color_desc),
+      "Liquid Glass",
+      "settings/appearance/liquidglass"
+    ),
+    SearchableSetting(
+      stringResource(R.string.liquid_glass_player),
+      stringResource(R.string.liquid_glass_player_desc),
+      "Liquid Glass",
+      "settings/appearance/liquidglass"
+    ),
+    SearchableSetting(
+      stringResource(R.string.liquid_glass_mini_player),
+      stringResource(R.string.liquid_glass_mini_player_desc),
+      "Liquid Glass",
+      "settings/appearance/liquidglass"
+    ),
+    SearchableSetting(
+      stringResource(R.string.liquid_glass_nav_bar),
+      stringResource(R.string.liquid_glass_nav_bar_desc),
+      "Liquid Glass",
+      "settings/appearance/liquidglass"
+    ),
+    SearchableSetting(
+      "Ambient Mode",
+      "Customize the appearance of the ambient player",
+      "Appearance",
+      "settings/appearance"
+    ),
+    SearchableSetting(
+      "Music Art Size",
+      "Change the album art size in Ambient Mode",
+      "Ambient Mode",
+      "ambient_settings"
+    ),
+    SearchableSetting(
+      "Show Song Name",
+      "Display the current song title in Ambient Mode",
+      "Ambient Mode",
+      "ambient_settings"
+    ),
+    SearchableSetting(
+      "Show Artist Name",
+      "Display the current artist name in Ambient Mode",
+      "Ambient Mode",
+      "ambient_settings"
+    ),
+    SearchableSetting(
+      "Show Lyrics",
+      "Display synchronized lyrics if available in Ambient Mode",
+      "Ambient Mode",
+      "ambient_settings"
+    ),
     SearchableSetting(
       stringResource(R.string.download_on_wifi_only),
       stringResource(R.string.download_on_wifi_only_desc),

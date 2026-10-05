@@ -26,15 +26,15 @@ if (hasGoogleServicesConfig) {
 
 android {
   namespace = "echo.music.iad1tya"
-  compileSdk = 36
+  compileSdk = 37
   ndkVersion = "27.0.12077973"
 
   defaultConfig {
     applicationId = "echo.music.iad1tya"
     minSdk = 26
     targetSdk = 36
-    versionCode = 158
-    versionName = "1.3.0"
+    versionCode = 162
+    versionName = "1.4.1"
 
     testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     vectorDrawables.useSupportLibrary = true
@@ -246,21 +246,18 @@ tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach 
 }
 
 dependencies {
+  implementation("nl.dionsegijn:konfetti-compose:2.0.4")
+
   implementation(project(":core"))
   implementation(project(":playback"))
 
   // Firebase - GMS flavor only (excluded from F-Droid / FOSS builds)
-  "gmsImplementation"(platform("com.google.firebase:firebase-bom:33.1.0"))
+  "gmsImplementation"(platform("com.google.firebase:firebase-bom:34.19.0"))
   "gmsImplementation"("com.google.firebase:firebase-analytics")
   "gmsImplementation"("com.google.firebase:firebase-crashlytics")
 
-  // Google Drive Sync - GMS flavor only
-  "gmsImplementation"(libs.play.services.auth)
+  // GMS Location Services for high-accuracy weather AI context
   "gmsImplementation"(libs.play.services.location)
-  "gmsImplementation"(libs.google.api.client.android)
-  "gmsImplementation"(libs.google.api.services.drive) {
-    exclude(group = "org.apache.httpcomponents")
-  }
 
   implementation(libs.haze)
   implementation(libs.guava)
@@ -289,7 +286,6 @@ dependencies {
   implementation(libs.androidx.adaptive.navigation)
   implementation(libs.palette)
   implementation(libs.materialKolor)
-  implementation(libs.androidx.browser)
 
   implementation(libs.appcompat)
 
@@ -305,6 +301,8 @@ dependencies {
   implementation(libs.media3.hls)
   implementation(libs.media3.ui)
   implementation(libs.media3.okhttp)
+  implementation(libs.media3.cronet)
+  implementation("com.google.android.gms:play-services-cronet:18.0.1")
 
   // Google Cast - only included in GMS flavor (not available in F-Droid/FOSS builds)
   "gmsImplementation"(libs.mediarouter)
@@ -319,10 +317,13 @@ dependencies {
   implementation(libs.apache.lang3)
 
   implementation(libs.hilt)
-  implementation(libs.jsoup)
   ksp(libs.hilt.compiler)
+  ksp("org.jetbrains.kotlin:kotlin-metadata-jvm:2.4.20")
+  annotationProcessor("org.jetbrains.kotlin:kotlin-metadata-jvm:2.4.20")
 
   implementation(project(":innertube"))
+  implementation("com.github.MetrolistGroup.innertubex:innertubex-android:v0.7.0")
+
   implementation(project(":lyrics"))
   implementation(project(":kugou"))
   implementation(project(":lrclib"))
