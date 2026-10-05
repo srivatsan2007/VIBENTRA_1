@@ -33,8 +33,8 @@ android {
     applicationId = "echo.music.iad1tya"
     minSdk = 26
     targetSdk = 36
-    versionCode = 162
-    versionName = "1.4.1"
+    versionCode = 159
+    versionName = "1.3.1"
 
     testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     vectorDrawables.useSupportLibrary = true
@@ -130,15 +130,24 @@ android {
     }
     create("release") {
       val keystoreFile = rootProject.file("keystore.jks")
-      if (keystoreFile.exists()) {
+      val localKeystore = file("keystore/release.keystore")
+      val debugKeystore = file("${System.getProperty("user.home")}/.android/debug.keystore")
+      if (keystoreFile.exists() && !System.getenv("STORE_PASSWORD").isNullOrEmpty()) {
         storeFile = keystoreFile
-      } else {
-        val localKeystore = file("keystore/release.keystore")
-        if (localKeystore.exists()) storeFile = localKeystore
+        storePassword = System.getenv("STORE_PASSWORD")
+        keyAlias = System.getenv("KEY_ALIAS")
+        keyPassword = System.getenv("KEY_PASSWORD")
+      } else if (localKeystore.exists() && !System.getenv("STORE_PASSWORD").isNullOrEmpty()) {
+        storeFile = localKeystore
+        storePassword = System.getenv("STORE_PASSWORD")
+        keyAlias = System.getenv("KEY_ALIAS")
+        keyPassword = System.getenv("KEY_PASSWORD")
+      } else if (debugKeystore.exists()) {
+        storeFile = debugKeystore
+        storePassword = "android"
+        keyAlias = "androiddebugkey"
+        keyPassword = "android"
       }
-      storePassword = System.getenv("STORE_PASSWORD")
-      keyAlias = System.getenv("KEY_ALIAS")
-      keyPassword = System.getenv("KEY_PASSWORD")
     }
     getByName("debug") {
       keyAlias = "androiddebugkey"

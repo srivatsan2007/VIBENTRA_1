@@ -39,4 +39,4 @@ lastfm-empty/build/
 bin/
 */bin/
 *.apk
-
+.vscode/
