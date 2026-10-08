@@ -30,6 +30,7 @@ import echo.music.iad1tya.ui.screens.artist.ArtistScreen
 import echo.music.iad1tya.ui.screens.artist.ArtistSongsScreen
 import echo.music.iad1tya.ui.screens.equalizer.EqScreen
 import echo.music.iad1tya.ui.screens.equalizer.axion.AxionEqScreen
+import echo.music.iad1tya.ui.screens.generate.GenerateScreen
 import echo.music.iad1tya.ui.screens.library.LibraryScreen
 import echo.music.iad1tya.ui.screens.library.LocalSongScreen
 import echo.music.iad1tya.ui.screens.playlist.AutoPlaylistScreen
@@ -494,6 +495,12 @@ fun NavGraphBuilder.navigationBuilder(
     )
   }
 
+  composable("settings/extensions") {
+    com.music.echo.ui.screens.settings.ExtensionSettingsScreen(
+        navController = navController,
+        scrollBehavior = scrollBehavior
+    )
+  }
   composable("settings/discord") {
     echo.music.iad1tya.ui.screens.settings.DiscordSettings(navController, scrollBehavior)
   }
@@ -540,4 +547,5 @@ fun NavGraphBuilder.navigationBuilder(
   composable("recognition_history") { RecognitionHistoryScreen(navController) }
   composable("settings/changelog") { ChangelogScreen(navController, scrollBehavior) }
   composable("settings/commits") { CommitScreen(navController, scrollBehavior) }
+  composable("generate") { GenerateScreen(navController) }
 }
