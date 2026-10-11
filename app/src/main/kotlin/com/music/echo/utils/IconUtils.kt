@@ -16,9 +16,11 @@ enum class AppIconType(val value: Int) {
   BILLIE_EILISH(13),
   SABRINA_CARPENTER(14),
   SABRINA_CARPENTER_2(15),
-  VIBENTRA_VR(16),
-  VIBENTRA_GOLD(17),
-  VIBENTRA_SOUND_OF_INDIA(18)
+  CRAFT(16),
+  SADIE(17),
+  VIBENTRA_VR(18),
+  VIBENTRA_GOLD(19),
+  VIBENTRA_SOUND_OF_INDIA(20)
 }
 
 object IconUtils {
@@ -36,6 +38,8 @@ object IconUtils {
     val billieEilish = ComponentName(context, "echo.music.iad1tya.MainActivityBillieEilish")
     val sabrina = ComponentName(context, "echo.music.iad1tya.MainActivitySabrina")
     val sabrina2 = ComponentName(context, "echo.music.iad1tya.MainActivitySabrina2")
+    val craft = ComponentName(context, "echo.music.iad1tya.MainActivityCraft")
+    val sadie = ComponentName(context, "echo.music.iad1tya.MainActivitySadie")
     val vr = ComponentName(context, "echo.music.iad1tya.MainActivityVr")
     val gold = ComponentName(context, "echo.music.iad1tya.MainActivityGold")
     val soundOfIndia = ComponentName(context, "echo.music.iad1tya.MainActivitySoundOfIndia")
@@ -104,6 +108,18 @@ object IconUtils {
       sabrina2,
       if (iconType == AppIconType.SABRINA_CARPENTER_2)
         PackageManager.COMPONENT_ENABLED_STATE_ENABLED
+      else PackageManager.COMPONENT_ENABLED_STATE_DISABLED,
+      PackageManager.DONT_KILL_APP
+    )
+    pm.setComponentEnabledSetting(
+      craft,
+      if (iconType == AppIconType.CRAFT) PackageManager.COMPONENT_ENABLED_STATE_ENABLED
+      else PackageManager.COMPONENT_ENABLED_STATE_DISABLED,
+      PackageManager.DONT_KILL_APP
+    )
+    pm.setComponentEnabledSetting(
+      sadie,
+      if (iconType == AppIconType.SADIE) PackageManager.COMPONENT_ENABLED_STATE_ENABLED
       else PackageManager.COMPONENT_ENABLED_STATE_DISABLED,
       PackageManager.DONT_KILL_APP
     )

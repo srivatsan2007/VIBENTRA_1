@@ -130,8 +130,20 @@ fun AppIconSettingsScreen(
           "Sound of India",
           "Cyber waveform neon edition",
           R.mipmap.vibentra_sound_of_india
+        ),
+        AppIconOption(
+          AppIconType.CRAFT,
+          "Craft",
+          "Craft icon by CR3TO_",
+          R.mipmap.ic_launcher_craft
+        ),
+        AppIconOption(
+          AppIconType.SADIE,
+          "Sadie Sink",
+          "Sadie Sink on community demand",
+          R.mipmap.ic_launcher_sadie
         )
-      )
+      ).sortedBy { it.title.lowercase() }
 
     Column(
       modifier =
