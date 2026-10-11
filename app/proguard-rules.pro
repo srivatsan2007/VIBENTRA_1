@@ -184,3 +184,8 @@
 -keepclasseswithmembers class echo.music.iad1tya.listentogether.** {
     kotlinx.serialization.KSerializer serializer(...);
 }
+
+## InnerTubeX Rules
+-dontwarn com.metrolist.innertubex.**
+-keep class com.metrolist.innertubex.** { *; }
+
