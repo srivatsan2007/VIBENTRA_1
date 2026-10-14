@@ -590,11 +590,11 @@ class MainActivity : ComponentActivity() {
     }
 
     val HasShownBirthdayNotificationKey = remember {
-      androidx.datastore.preferences.core.booleanPreferencesKey("has_shown_birthday_notification")
+      androidx.datastore.preferences.core.booleanPreferencesKey("has_shown_birthday_notification_dec_10")
     }
     LaunchedEffect(Unit) {
       val today = java.time.LocalDate.now()
-      if (today.month == java.time.Month.OCTOBER && today.dayOfMonth == 14) {
+      if (today.month == java.time.Month.DECEMBER && today.dayOfMonth == 10) {
         val prefs = context.dataStore.data.first()
         val hasShown = prefs[HasShownBirthdayNotificationKey] ?: false
         if (!hasShown) {
@@ -629,7 +629,7 @@ class MainActivity : ComponentActivity() {
             val notification =
               androidx.core.app.NotificationCompat.Builder(context, channelId)
                 .setSmallIcon(R.drawable.echomusicnotification) // Use correct transparent echo icon
-                .setContentTitle("Happy Birthday Aditya!")
+                .setContentTitle("Happy Birthday SRIVATSAN R!")
                 .setContentText("Today is the developer's birthday!")
                 .setLargeIcon(bitmap)
                 .setStyle(
@@ -641,7 +641,7 @@ class MainActivity : ComponentActivity() {
                 .setAutoCancel(true)
                 .build()
 
-            notificationManager.notify(1014, notification)
+            notificationManager.notify(1210, notification)
 
             context.dataStore.edit { preferences ->
               preferences[HasShownBirthdayNotificationKey] = true
