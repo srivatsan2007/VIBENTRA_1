@@ -42,3 +42,8 @@ bin/
 *.jks
 *.keystore
 .vscode/
+
+# Reference source repositories (never commit)
+BitChord-main/
+ArchiveTune-main/
+
