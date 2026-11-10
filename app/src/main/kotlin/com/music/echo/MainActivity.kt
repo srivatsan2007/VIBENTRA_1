@@ -602,14 +602,69 @@ class MainActivity : ComponentActivity() {
       }
     }
 
-    val HasShownBirthdayNotificationKey = remember {
-      androidx.datastore.preferences.core.booleanPreferencesKey("has_shown_birthday_notification_dec_10")
-    }
     LaunchedEffect(Unit) {
       val today = java.time.LocalDate.now()
-      if (today.month == java.time.Month.DECEMBER && today.dayOfMonth == 10) {
+
+      data class Celebration(
+        val notificationId: Int,
+        val prefKey: String,
+        val isToday: Boolean,
+        val title: String,
+        val message: String,
+        val imageRes: Int? = null,
+      )
+
+      val celebrations = listOf(
+        // New Year (Jan 1)
+        Celebration(
+          notificationId = 101,
+          prefKey = "has_shown_celebration_new_year_${today.year}",
+          isToday = today.month == java.time.Month.JANUARY && today.dayOfMonth == 1,
+          title = "Happy New Year ${today.year}! 🎉",
+          message = "Wishing you a joyful and musical New Year from Vibentra!"
+        ),
+        // Pongal (Jan 14 & 15)
+        Celebration(
+          notificationId = 114,
+          prefKey = "has_shown_celebration_pongal_${today.year}",
+          isToday = today.month == java.time.Month.JANUARY && (today.dayOfMonth == 14 || today.dayOfMonth == 15),
+          title = "Happy Pongal! 🌾☀️",
+          message = "May this harvest festival bring abundant happiness, peace, and melody to your life!"
+        ),
+        // Republic Day (Jan 26)
+        Celebration(
+          notificationId = 126,
+          prefKey = "has_shown_celebration_republic_day_${today.year}",
+          isToday = today.month == java.time.Month.JANUARY && today.dayOfMonth == 26,
+          title = "Happy Republic Day! 🇮🇳",
+          message = "Celebrating the pride and unity of our nation. Enjoy your day with music!"
+        ),
+        // Independence Day (Aug 15)
+        Celebration(
+          notificationId = 815,
+          prefKey = "has_shown_celebration_independence_day_${today.year}",
+          isToday = today.month == java.time.Month.AUGUST && today.dayOfMonth == 15,
+          title = "Happy Independence Day! 🇮🇳",
+          message = "Saluting the spirit of freedom. Celebrate with your favorite tunes!"
+        ),
+        // Developer Birthday (Dec 10)
+        Celebration(
+          notificationId = 1210,
+          prefKey = "has_shown_birthday_notification_dec_10_${today.year}",
+          isToday = today.month == java.time.Month.DECEMBER && today.dayOfMonth == 10,
+          title = "Happy Birthday SRIVATSAN R!",
+          message = "Today is the developer's birthday!",
+          imageRes = R.drawable.birthday_image
+        )
+      )
+
+      val activeCelebration = celebrations.firstOrNull { it.isToday }
+      if (activeCelebration != null) {
+        val prefKey = androidx.datastore.preferences.core.booleanPreferencesKey(activeCelebration.prefKey)
+        val legacyBirthdayKey = androidx.datastore.preferences.core.booleanPreferencesKey("has_shown_birthday_notification_dec_10")
         val prefs = context.dataStore.data.first()
-        val hasShown = prefs[HasShownBirthdayNotificationKey] ?: false
+        val hasShown = prefs[prefKey] ?: (if (activeCelebration.notificationId == 1210) prefs[legacyBirthdayKey] ?: false else false)
+
         if (!hasShown) {
           if (
             android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.TIRAMISU ||
@@ -618,8 +673,7 @@ class MainActivity : ComponentActivity() {
                 android.Manifest.permission.POST_NOTIFICATIONS
               ) == android.content.pm.PackageManager.PERMISSION_GRANTED
           ) {
-
-            val channelId = "birthday_channel"
+            val channelId = "celebrations_channel"
             val notificationManager =
               context.getSystemService(android.app.NotificationManager::class.java)
 
@@ -627,37 +681,44 @@ class MainActivity : ComponentActivity() {
               val channel =
                 android.app.NotificationChannel(
                   channelId,
-                  "Birthday",
+                  "Celebrations",
                   android.app.NotificationManager.IMPORTANCE_HIGH
                 )
               notificationManager.createNotificationChannel(channel)
             }
 
-            val bitmap =
-              android.graphics.BitmapFactory.decodeResource(
-                context.resources,
-                R.drawable.birthday_image
-              )
+            val builder = androidx.core.app.NotificationCompat.Builder(context, channelId)
+              .setSmallIcon(R.drawable.echomusicnotification)
+              .setContentTitle(activeCelebration.title)
+              .setContentText(activeCelebration.message)
+              .setPriority(androidx.core.app.NotificationCompat.PRIORITY_HIGH)
+              .setAutoCancel(true)
 
-            val notification =
-              androidx.core.app.NotificationCompat.Builder(context, channelId)
-                .setSmallIcon(R.drawable.echomusicnotification) // Use correct transparent echo icon
-                .setContentTitle("Happy Birthday SRIVATSAN R!")
-                .setContentText("Today is the developer's birthday!")
-                .setLargeIcon(bitmap)
+            if (activeCelebration.imageRes != null) {
+              val bitmap = android.graphics.BitmapFactory.decodeResource(
+                context.resources,
+                activeCelebration.imageRes
+              )
+              builder.setLargeIcon(bitmap)
                 .setStyle(
                   androidx.core.app.NotificationCompat.BigPictureStyle()
                     .bigPicture(bitmap)
                     .bigLargeIcon(null as android.graphics.Bitmap?)
                 )
-                .setPriority(androidx.core.app.NotificationCompat.PRIORITY_HIGH)
-                .setAutoCancel(true)
-                .build()
+            } else {
+              builder.setStyle(
+                androidx.core.app.NotificationCompat.BigTextStyle()
+                  .bigText(activeCelebration.message)
+              )
+            }
 
-            notificationManager.notify(1210, notification)
+            notificationManager.notify(activeCelebration.notificationId, builder.build())
 
             context.dataStore.edit { preferences ->
-              preferences[HasShownBirthdayNotificationKey] = true
+              preferences[prefKey] = true
+              if (activeCelebration.notificationId == 1210) {
+                preferences[legacyBirthdayKey] = true
+              }
             }
           }
         }
