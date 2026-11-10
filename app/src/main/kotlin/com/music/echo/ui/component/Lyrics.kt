@@ -2235,6 +2235,9 @@ fun Lyrics(
       val paletteColors = remember { mutableStateListOf<Color>() }
 
       var previewBackgroundStyle by remember { mutableStateOf(LyricsBackgroundStyle.SOLID) }
+      var previewAspectRatio by remember { mutableStateOf(LyricsCardAspectRatio.SQUARE_1_1) }
+      var selectedThemePreset by remember { mutableStateOf(LyricsThemePreset.DYNAMIC) }
+      var customGradientColors by remember { mutableStateOf<List<Color>?>(null) }
 
       val previewCardWidth = configuration.containerDpSize.width * 0.90f
       val previewPadding = 20.dp * 2
@@ -2340,13 +2343,116 @@ fun Lyrics(
 
               Spacer(modifier = Modifier.height(12.dp))
 
+              // Card Format Selector
               Text(
-                text = stringResource(id = R.string.player_background_style),
-                style = MaterialTheme.typography.titleMedium
+                text = "Card Format",
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = androidx.compose.ui.text.font.FontWeight.Bold,
+                modifier = Modifier.fillMaxWidth().padding(bottom = 6.dp),
+                textAlign = TextAlign.Start
               )
               Row(
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
-                modifier = Modifier.padding(vertical = 8.dp)
+                modifier = Modifier.fillMaxWidth().padding(bottom = 12.dp)
+              ) {
+                LyricsCardAspectRatio.entries.forEach { ratio ->
+                  val selected = previewAspectRatio == ratio
+                  androidx.compose.material3.FilterChip(
+                    selected = selected,
+                    onClick = { previewAspectRatio = ratio },
+                    label = { Text(ratio.label) }
+                  )
+                }
+              }
+
+              // Theme Presets Selector
+              Text(
+                text = "Theme Presets",
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = androidx.compose.ui.text.font.FontWeight.Bold,
+                modifier = Modifier.fillMaxWidth().padding(bottom = 6.dp),
+                textAlign = TextAlign.Start
+              )
+              Row(
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                modifier =
+                  Modifier.fillMaxWidth()
+                    .horizontalScroll(rememberScrollState())
+                    .padding(bottom = 12.dp)
+              ) {
+                LyricsThemePreset.entries.forEach { preset ->
+                  val selected = selectedThemePreset == preset
+                  androidx.compose.material3.FilterChip(
+                    selected = selected,
+                    onClick = {
+                      selectedThemePreset = preset
+                      when (preset) {
+                        LyricsThemePreset.DYNAMIC -> {
+                          previewBackgroundStyle = LyricsBackgroundStyle.GRADIENT
+                          previewBackgroundColor = Color(0xFF121212)
+                          previewTextColor = Color.White
+                          previewSecondaryTextColor = Color.White.copy(alpha = 0.7f)
+                          customGradientColors = null
+                        }
+                        LyricsThemePreset.SPOTIFY -> {
+                          previewBackgroundStyle = LyricsBackgroundStyle.SOLID
+                          previewBackgroundColor = LyricsCardThemes.SpotifyBackground
+                          previewTextColor = LyricsCardThemes.SpotifyAccent
+                          previewSecondaryTextColor = LyricsCardThemes.SpotifySecondary
+                          customGradientColors = null
+                        }
+                        LyricsThemePreset.AURORA -> {
+                          previewBackgroundStyle = LyricsBackgroundStyle.GRADIENT
+                          previewBackgroundColor = Color(0xFF1E1B4B)
+                          previewTextColor = LyricsCardThemes.AuroraText
+                          previewSecondaryTextColor = LyricsCardThemes.AuroraSecondary
+                          customGradientColors = LyricsCardThemes.AuroraGradient
+                        }
+                        LyricsThemePreset.AMOLED -> {
+                          previewBackgroundStyle = LyricsBackgroundStyle.SOLID
+                          previewBackgroundColor = LyricsCardThemes.AmoleDarkBackground
+                          previewTextColor = LyricsCardThemes.AmoleDarkText
+                          previewSecondaryTextColor = LyricsCardThemes.AmoleDarkSecondary
+                          customGradientColors = null
+                        }
+                        LyricsThemePreset.SUNSET -> {
+                          previewBackgroundStyle = LyricsBackgroundStyle.GRADIENT
+                          previewBackgroundColor = Color(0xFFE11D48)
+                          previewTextColor = LyricsCardThemes.SunsetText
+                          previewSecondaryTextColor = LyricsCardThemes.SunsetSecondary
+                          customGradientColors = LyricsCardThemes.SunsetGradient
+                        }
+                        LyricsThemePreset.OCEAN -> {
+                          previewBackgroundStyle = LyricsBackgroundStyle.GRADIENT
+                          previewBackgroundColor = Color(0xFF0F172A)
+                          previewTextColor = LyricsCardThemes.OceanText
+                          previewSecondaryTextColor = LyricsCardThemes.OceanSecondary
+                          customGradientColors = LyricsCardThemes.OceanGradient
+                        }
+                        LyricsThemePreset.VINTAGE -> {
+                          previewBackgroundStyle = LyricsBackgroundStyle.SOLID
+                          previewBackgroundColor = LyricsCardThemes.VintageBackground
+                          previewTextColor = LyricsCardThemes.VintageText
+                          previewSecondaryTextColor = LyricsCardThemes.VintageSecondary
+                          customGradientColors = null
+                        }
+                      }
+                    },
+                    label = { Text(preset.label) }
+                  )
+                }
+              }
+
+              Text(
+                text = stringResource(id = R.string.player_background_style),
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = androidx.compose.ui.text.font.FontWeight.Bold,
+                modifier = Modifier.fillMaxWidth().padding(bottom = 6.dp),
+                textAlign = TextAlign.Start
+              )
+              Row(
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                modifier = Modifier.padding(bottom = 12.dp)
               ) {
                 LyricsBackgroundStyle.entries.forEach { style ->
                   val label =
@@ -2369,9 +2475,15 @@ fun Lyrics(
               Box(
                 modifier =
                   Modifier.fillMaxWidth()
-                    .aspectRatio(1f)
+                    .then(
+                      if (previewAspectRatio == LyricsCardAspectRatio.STORY_9_16)
+                        Modifier.height(380.dp).aspectRatio(9f / 16f, matchHeightConstraintsFirst = true)
+                      else
+                        Modifier.aspectRatio(1f)
+                    )
                     .padding(8.dp)
-                    .clip(RoundedCornerShape(12.dp))
+                    .clip(RoundedCornerShape(12.dp)),
+                contentAlignment = Alignment.Center
               ) {
                 LyricsImageCard(
                   lyricText = lyricsText,
@@ -2380,7 +2492,9 @@ fun Lyrics(
                   backgroundStyle = previewBackgroundStyle,
                   textColor = previewTextColor,
                   secondaryTextColor = previewSecondaryTextColor,
-                  textAlign = lyricsTextAlign
+                  textAlign = lyricsTextAlign,
+                  aspectRatio = previewAspectRatio,
+                  customGradient = customGradientColors
                 )
               }
 
@@ -2549,7 +2663,9 @@ fun Lyrics(
                               LyricsPosition.LEFT -> Layout.Alignment.ALIGN_NORMAL
                               LyricsPosition.CENTER -> Layout.Alignment.ALIGN_CENTER
                               LyricsPosition.RIGHT -> Layout.Alignment.ALIGN_OPPOSITE
-                            }
+                            },
+                          aspectRatio = previewAspectRatio,
+                          customGradientColors = customGradientColors?.map { it.toArgb() }
                         )
                       val timestamp = System.currentTimeMillis()
                       val filename = "lyrics_$timestamp"

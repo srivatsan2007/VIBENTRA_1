@@ -27,6 +27,7 @@ import coil3.request.allowHardware
 import coil3.toBitmap
 import echo.music.iad1tya.R
 import echo.music.iad1tya.ui.component.LyricsBackgroundStyle
+import echo.music.iad1tya.ui.component.LyricsCardAspectRatio
 import java.io.File
 import java.io.FileOutputStream
 import kotlin.math.roundToInt
@@ -47,11 +48,13 @@ object ComposeToImage {
     backgroundStyle: LyricsBackgroundStyle = LyricsBackgroundStyle.SOLID,
     textColor: Int? = null,
     secondaryTextColor: Int? = null,
-    lyricsAlignment: Layout.Alignment = Layout.Alignment.ALIGN_CENTER
+    lyricsAlignment: Layout.Alignment = Layout.Alignment.ALIGN_CENTER,
+    aspectRatio: LyricsCardAspectRatio = LyricsCardAspectRatio.SQUARE_1_1,
+    customGradientColors: List<Int>? = null
   ): Bitmap =
     withContext(Dispatchers.Default) {
-      val imageWidth = 2160
-      val imageHeight = 2160
+      val imageWidth = if (aspectRatio == LyricsCardAspectRatio.STORY_9_16) 1080 else 2160
+      val imageHeight = if (aspectRatio == LyricsCardAspectRatio.STORY_9_16) 1920 else 2160
 
       val bitmap = createBitmap(imageWidth, imageHeight)
       val canvas = Canvas(bitmap)
@@ -113,7 +116,20 @@ object ComposeToImage {
           }
         }
         LyricsBackgroundStyle.GRADIENT -> {
-          if (coverArtBitmap != null) {
+          if (customGradientColors != null && customGradientColors.size >= 2) {
+            val gradient =
+              LinearGradient(
+                0f,
+                0f,
+                imageWidth.toFloat(),
+                imageHeight.toFloat(),
+                customGradientColors.toIntArray(),
+                null,
+                Shader.TileMode.CLAMP
+              )
+            backgroundPaint.shader = gradient
+            canvas.drawRect(backgroundRect, backgroundPaint)
+          } else if (coverArtBitmap != null) {
             val palette = Palette.from(coverArtBitmap).generate()
             val vibrant = palette.getVibrantColor(bgColor)
             val darkVibrant = palette.getDarkVibrantColor(bgColor)
@@ -279,8 +295,9 @@ object ComposeToImage {
         footerY + logoBoxSize / 2f - (appNamePaint.descent() + appNamePaint.ascent()) / 2f
       canvas.drawText(appName, appNameX, appNameY, appNamePaint)
 
-      val lyricsTop = padding + coverArtSize + headerBottomPadding
-      val lyricsBottom = footerY - (12f * scale)
+      val extraStorySpacing = if (aspectRatio == LyricsCardAspectRatio.STORY_9_16) 40f * scale else 0f
+      val lyricsTop = padding + coverArtSize + headerBottomPadding + extraStorySpacing
+      val lyricsBottom = footerY - (12f * scale) - extraStorySpacing
       val lyricsHeight = lyricsBottom - lyricsTop
       val lyricsWidth = imageWidth - (padding * 2)
 

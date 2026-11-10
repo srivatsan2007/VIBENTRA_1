@@ -143,6 +143,47 @@ enum class LyricsBackgroundStyle {
   GRADIENT
 }
 
+enum class LyricsCardAspectRatio(val label: String) {
+  SQUARE_1_1("1:1 Square"),
+  STORY_9_16("9:16 Story (Instagram)")
+}
+
+enum class LyricsThemePreset(val label: String) {
+  DYNAMIC("Dynamic"),
+  SPOTIFY("Spotify"),
+  AURORA("Aurora"),
+  AMOLED("AMOLED"),
+  SUNSET("Sunset"),
+  OCEAN("Ocean"),
+  VINTAGE("Vintage")
+}
+
+object LyricsCardThemes {
+  val SpotifyBackground = Color(0xFF121212)
+  val SpotifyAccent = Color(0xFF1DB954)
+  val SpotifySecondary = Color(0xB3FFFFFF)
+
+  val AuroraGradient = listOf(Color(0xFF6B21A8), Color(0xFF1E1B4B), Color(0xFF06B6D4))
+  val AuroraText = Color.White
+  val AuroraSecondary = Color.White.copy(alpha = 0.75f)
+
+  val AmoleDarkBackground = Color(0xFF000000)
+  val AmoleDarkText = Color.White
+  val AmoleDarkSecondary = Color(0xFF888888)
+
+  val SunsetGradient = listOf(Color(0xFFE11D48), Color(0xFF9333EA), Color(0xFFF59E0B))
+  val SunsetText = Color.White
+  val SunsetSecondary = Color.White.copy(alpha = 0.8f)
+
+  val OceanGradient = listOf(Color(0xFF0F172A), Color(0xFF1E3A8A), Color(0xFF0284C7))
+  val OceanText = Color(0xFFE0F2FE)
+  val OceanSecondary = Color(0xFF7DD3FC)
+
+  val VintageBackground = Color(0xFF292524)
+  val VintageText = Color(0xFFFEF3C7)
+  val VintageSecondary = Color(0xFFD6D3D1)
+}
+
 @SuppressLint("UnusedBoxWithConstraintsScope")
 @Composable
 fun LyricsImageCard(
@@ -153,14 +194,16 @@ fun LyricsImageCard(
   backgroundStyle: LyricsBackgroundStyle = LyricsBackgroundStyle.SOLID,
   textColor: Color? = null,
   secondaryTextColor: Color? = null,
-  textAlign: TextAlign = TextAlign.Center
+  textAlign: TextAlign = TextAlign.Center,
+  aspectRatio: LyricsCardAspectRatio = LyricsCardAspectRatio.SQUARE_1_1,
+  customGradient: List<Color>? = null
 ) {
   val context = LocalContext.current
   val density = LocalDensity.current
 
   val cardCornerRadius = 20.dp
-  val padding = 28.dp
-  val coverArtSize = 64.dp
+  val padding = if (aspectRatio == LyricsCardAspectRatio.STORY_9_16) 24.dp else 28.dp
+  val coverArtSize = if (aspectRatio == LyricsCardAspectRatio.STORY_9_16) 72.dp else 64.dp
 
   val defaultBgColor = if (darkBackground) Color(0xFF121212) else Color(0xFFF5F5F5)
   val backgroundSolidColor = backgroundColor ?: defaultBgColor
@@ -178,30 +221,34 @@ fun LyricsImageCard(
   var gradientBrush by remember { mutableStateOf<Brush?>(null) }
 
   if (backgroundStyle == LyricsBackgroundStyle.GRADIENT) {
-    LaunchedEffect(mediaMetadata.thumbnailUrl) {
-      withContext(Dispatchers.IO) {
-        try {
-          val loader = context.imageLoader
-          val req =
-            ImageRequest.Builder(context)
-              .data(mediaMetadata.thumbnailUrl)
-              .allowHardware(false)
-              .build()
-          val result = loader.execute(req)
-          val bmp = result.image?.toBitmap()
-          if (bmp != null) {
-            val palette = Palette.from(bmp).generate()
-            val vibrant = palette.getVibrantColor(defaultBgColor.toArgb())
-            val muted = palette.getMutedColor(defaultBgColor.toArgb())
-            val darkVibrant = palette.getDarkVibrantColor(defaultBgColor.toArgb())
+    if (customGradient != null && customGradient.size >= 2) {
+      gradientBrush = Brush.linearGradient(colors = customGradient, tileMode = TileMode.Clamp)
+    } else {
+      LaunchedEffect(mediaMetadata.thumbnailUrl) {
+        withContext(Dispatchers.IO) {
+          try {
+            val loader = context.imageLoader
+            val req =
+              ImageRequest.Builder(context)
+                .data(mediaMetadata.thumbnailUrl)
+                .allowHardware(false)
+                .build()
+            val result = loader.execute(req)
+            val bmp = result.image?.toBitmap()
+            if (bmp != null) {
+              val palette = Palette.from(bmp).generate()
+              val vibrant = palette.getVibrantColor(defaultBgColor.toArgb())
+              val muted = palette.getMutedColor(defaultBgColor.toArgb())
+              val darkVibrant = palette.getDarkVibrantColor(defaultBgColor.toArgb())
 
-            val color1 = Color(vibrant)
-            val color2 = Color(darkVibrant)
+              val color1 = Color(vibrant)
+              val color2 = Color(darkVibrant)
 
-            gradientBrush =
-              Brush.linearGradient(colors = listOf(color1, color2), tileMode = TileMode.Clamp)
-          }
-        } catch (_: Exception) {}
+              gradientBrush =
+                Brush.linearGradient(colors = listOf(color1, color2), tileMode = TileMode.Clamp)
+            }
+          } catch (_: Exception) {}
+        }
       }
     }
   }
