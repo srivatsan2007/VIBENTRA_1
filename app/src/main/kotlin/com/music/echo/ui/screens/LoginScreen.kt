@@ -364,10 +364,13 @@ fun LoginScreen(navController: NavController) {
         }
       },
       actions = {
-        IconButton(onClick = {
-          checkAuthCookies("https://music.youtube.com")
-          webView?.loadUrl("https://music.youtube.com")
-        }) {
+        IconButton(
+          onClick = {
+            checkAuthCookies("https://music.youtube.com")
+            webView?.loadUrl("https://music.youtube.com")
+          },
+          onLongClick = {}
+        ) {
           Icon(painterResource(R.drawable.sync), contentDescription = "Reload")
         }
       }
