@@ -1009,6 +1009,4 @@
     <string name="your_podcasts">Your podcasts</string>
     <string name="new_episodes">New episodes</string>
     <string name="n_episode">%d episode</string>
-    <string name="theme_mode_monochrome">Monochrome</string>
-    <string name="theme_mode_monochrome_desc">Pure neutral grayscale with high contrast</string>
 </resources>
