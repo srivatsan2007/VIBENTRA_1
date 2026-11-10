@@ -1,0 +1,54 @@
+{
+  "features": [
+    "Local Taste Engine: Offline, account-free algorithmic recommendation engine with skip tracking and taste mix generation",
+    "Local Taste Engine (Slice 2): Multi-source Last.fm recommendation pipeline (similar tracks, similar artists, top genres) with 1-hour taste snapshot caching and additive scoring bonuses",
+    "Local Taste Engine (Slice 3): Genre awareness with additive scoring bonus (+1.0), YouTube taste signals extraction, cross-screen generation status synchronization, and 'From Taste' quick action",
+    "Music Flow: optional full-screen vertical swipe discovery (Home shortcut) that plays personalized songs through the existing player, with like/playlist/share/lyrics actions, Not interested / Less like this feedback, Restore previous queue, offline downloaded-song fallback and settings under Settings → Music Flow",
+    "Android Auto: optional autoplay of the restored queue on automotive connect (Settings → Player, default off) and Home browse node with YouTube Home sections, suggested and recent content alongside local library",
+    "Vibe Wrap: Story playback with nine slides, segmented progress bars, tap left/right to navigate, hold to pause, animated aurora backgrounds, vinyl-disc Top Track, Musical Persona slide with archetype and Sonic Radar, complete poster recap",
+    "Podcasts: Browse shows and episodes, save to Library, follow shows, choose episode order, Continue listening, episode progress bars, podcast-specific playback speed, skip buttons, fullscreen video player",
+    "Canvas: Dynamic 5-second YouTube video canvas loop with 1080p/720p quality, edge-to-edge center crop, Apple Music-style blurred artwork backdrop",
+    "Launcher Icons: Neon Glass and Millie Bobby Brown app icons added to icon selector",
+    "Music Flow: Center pause/play button, vertical swipe icon, synchronized lyrics",
+    "Widgets: All 11 widgets redesigned with responsive layout, corrected bounds, squircle artwork, and inline controls",
+    "Settings: High Quality (320kbps) guide link in audio settings, improved extension priority UI"
+  ],
+  "bug_fixes": [
+    "Auth: Fix Google 2FA stalling in WebView login — enable DOM storage, database, third-party cookies, mask WebView signature in User-Agent, permit Google auth domains, replace Runtime.exit() with clean Compose navigation",
+    "Stats: fix NullPointerException crash when opening Stats by making SongWithStats thumbnailUrl and play counts safely nullable, removing unsafe forced unwraps, and guarding date sequence boundaries (#646)",
+    "Playback: fix custom addon (BitChord) queue repeating the first track audio when advancing, caused by stale trackedMediaItem metadata and loose title-only matching; resolve per-mediaId metadata with strict title+artist+duration match and addon-aware preload",
+    "Android Auto: fix Home shelves rendering without artwork and shuffle-led shelves ('Casuale') browsing empty, by falling back to the first item thumbnail and mapping musicShuffleRenderer",
+    "Android Auto: embed browse artwork in the media item so covers load without the app in the foreground, and stop replacing failed artwork lookups with a blank bitmap",
+    "Prevent missing song-ID map crashes in Quick Picks and Forgotten Favorites by keeping randomized Room relation queries stable across statement resets",
+    "Fix artist names containing & showing as \"amp;\" (e.g. \"Sabin Rai, amp; The Pharaoh\") by decoding HTML entities and dropping orphan entity fragments from YouTube Music API display text at the :innertube parse boundary",
+    "Music Flow: show the translucent play icon on album artwork only while paused, hide it during playback, and keep direct tap playback control",
+    "Music Flow: synchronize lyrics to playback and saved timing offsets, follow paused seeks and song changes, preserve instrumental gaps, and animate line changes with a smooth slide and fade",
+    "Music Flow: automatically scroll long song titles and artist names",
+    "Lyrics: time out stalled providers so other lyrics sources can be tried",
+    "Android Auto: deliver artwork as signed content URIs, cache cluster covers, stabilize Home shelves across reconnects, and fall back to hqdefault when maxresdefault 404s (#677)",
+    "Playback: fix downloaded track playback mismatch when filtering explicit/video songs, and recognize completed offline downloads when contentLength is unset (#666, #674)",
+    "Playlists: allow removing duplicate songs from a playlist directly from the 'Add to playlist' dialog and fix premature dialog dismissal (#655, #675)",
+    "Player: read player duration on main thread before canvas IO lookup to prevent threading violations",
+    "Canvas: search official music video with title keyword thresholding (>=75%), negative keyword filtering, verified music video scoring (>=80)",
+    "Widgets: fix Echo Classic progress bar, Echo Playlists icon/button overlap and text truncation, replace soundwave header with Echo Music logo in Showcase widget, fix Recognizer widget to 1x1 cell"
+  ],
+  "upstream_sync": {
+    "source": "https://github.com/EchoMusicApp/Echo-Music",
+    "synced_version": "1.4.6",
+    "synced_at": "2026-11-10",
+    "commits_applied": [
+      "fix(auth): resolve Google 2FA stalling",
+      "feat(icons): add Neon Glass and Millie Bobby Brown launcher icons",
+      "feat(widgets): redesign all 11 widgets",
+      "feat(podcast): smooth audio-video transitions",
+      "feat(podcast): fullscreen landscape video player",
+      "feat(player): improve canvas video quality and layout",
+      "feat(canvas): search official music video and fix MP4 mime",
+      "fix(player): read player duration on main thread",
+      "feat(player): 5s video canvas loop and equalized controls",
+      "feat(musicflow): center pause button and vertical swipe icon",
+      "feat(settings): 320kbps guide link and extension priority update"
+    ]
+  },
+  "contributors": []
+}
