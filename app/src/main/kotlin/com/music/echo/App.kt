@@ -192,6 +192,21 @@ class App : Application(), SingletonImageLoader.Factory {
     YouTube.ipVersion =
       settings[IpVersionKey]?.toEnum(defaultValue = IpVersion.AUTO) ?: IpVersion.AUTO
 
+    // Restore saved account credentials synchronously on startup so sessions persist across app restarts
+    settings[InnerTubeCookieKey]?.takeIf { it.isNotBlank() }?.let { savedCookie ->
+      try {
+        YouTube.cookie = savedCookie
+      } catch (e: Exception) {
+        Timber.e(e, "Failed to load saved InnerTube cookie on startup")
+      }
+    }
+    settings[VisitorDataKey]?.takeIf { it.isNotBlank() && it != "null" }?.let {
+      YouTube.visitorData = it
+    }
+    settings[DataSyncIdKey]?.takeIf { it.isNotBlank() }?.let {
+      YouTube.dataSyncId = it.substringBefore("||")
+    }
+
     // Set playback engine preference
     val engineName = settings[echo.music.iad1tya.constants.PlaybackEngineKey]
     echo.music.iad1tya.utils.YTPlayerUtils.playbackEngine =
@@ -269,11 +284,15 @@ class App : Application(), SingletonImageLoader.Factory {
         }
         .distinctUntilChanged()
         .collect { cookie ->
-          try {
-            YouTube.cookie = cookie
-          } catch (e: Exception) {
-            Timber.e(e, "Could not parse cookie. Clearing existing cookie.")
-            forgetAccount(this@App)
+          if (cookie.isNullOrBlank()) {
+            YouTube.cookie = null
+          } else {
+            try {
+              YouTube.cookie = cookie
+            } catch (e: Exception) {
+              Timber.e(e, "Could not parse cookie. Clearing existing cookie.")
+              forgetAccount(this@App)
+            }
           }
         }
     }
