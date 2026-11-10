@@ -1,6 +1,5 @@
 package echo.music.iad1tya.canvas
 
-import com.music.innertube.NewPipeExtractor
 import com.music.innertube.YouTube
 import com.music.innertube.models.SongItem
 import com.music.innertube.models.YouTubeClient
@@ -196,57 +195,16 @@ object YouTubeVideoCanvasProvider {
         }
       }
 
-      // Fall back to NewPipeExtractor if direct clients didn't yield a stream
-      if (videoUrl.isNullOrBlank()) {
-        try {
-          val newPipeResult = NewPipeExtractor.getVideoUrlAndDuration(targetVideoId)
-          if (newPipeResult != null) {
-            videoUrl = newPipeResult.first
-            if (totalDurationSec <= 0L) {
-              totalDurationSec = newPipeResult.second
-            }
-            Timber.tag(TAG).d("Found video stream via NewPipe for $targetVideoId: $videoUrl")
-          }
-        } catch (e: Exception) {
-          Timber.tag(TAG).w(e, "NewPipeExtractor failed for targetVideoId: $targetVideoId")
-        }
-      }
-
-      // If official video failed to resolve, try original videoId as fallback
-      if (videoUrl.isNullOrBlank() && targetVideoId != videoId) {
-        try {
-          val newPipeResult = NewPipeExtractor.getVideoUrlAndDuration(videoId)
-          if (newPipeResult != null) {
-            videoUrl = newPipeResult.first
-            if (totalDurationSec <= 0L) {
-              totalDurationSec = newPipeResult.second
-            }
-            Timber.tag(TAG).d("Found fallback video stream via NewPipe for $videoId: $videoUrl")
-          }
-        } catch (e: Exception) {
-          Timber.tag(TAG).w(e, "Fallback NewPipeExtractor failed for videoId: $videoId")
-        }
-      }
-
       if (videoUrl.isNullOrBlank()) {
         Timber.tag(TAG).w("No video stream found for canvas targetVideoId: $targetVideoId")
         return@withContext null
       }
 
-      // Calculate 5-second clip from the center of the video
-      val totalDurationMs = if (totalDurationSec > 0) totalDurationSec * 1000L else 180_000L
-      val clipDurationMs = 5_000L
-      val centerMs = totalDurationMs / 2
-      val startMs = (centerMs - clipDurationMs / 2).coerceAtLeast(0L)
-      val endMs = (startMs + clipDurationMs).coerceAtMost(totalDurationMs)
-
       val artwork = CanvasArtwork(
         name = title,
         artist = artist,
         videoUrl = videoUrl,
-        animated = videoUrl,
-        clipStartMs = startMs,
-        clipEndMs = endMs
+        animated = videoUrl
       )
 
       cache[videoId] = artwork
