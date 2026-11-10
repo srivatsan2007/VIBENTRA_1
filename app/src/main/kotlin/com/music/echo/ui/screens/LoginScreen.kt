@@ -135,58 +135,28 @@ fun LoginScreen(navController: NavController) {
           }
         }
         .onFailure { error ->
-          Timber.e(error, "Login: Authentication validation failed, saving fallback and returning")
-          val newAccount =
-            AccountData(
-              name = accountName.ifBlank { "YouTube Music" },
-              email = accountEmail,
-              channelHandle = accountChannelHandle,
-              cookie = innerTubeCookie,
-              visitorData = visitorData,
-              dataSyncId = dataSyncId,
-              avatarUrl = "",
-            )
-          val accounts =
-            try {
-                Json.decodeFromString<List<AccountData>>(savedAccountsJson)
-              } catch (e: Exception) {
-                emptyList()
-              }
-              .toMutableList()
-          accounts.removeAll { acc -> acc.cookie == innerTubeCookie }
-          accounts.add(newAccount)
-          savedAccountsJson = Json.encodeToString(accounts)
-
-          webView?.apply {
-            stopLoading()
-            clearHistory()
-            clearCache(true)
-            clearFormData()
-          }
-
-          if (!navController.navigateUp()) {
-            navController.backToMain()
-          }
+          Timber.e(error, "Login: Authentication validation failed. Allowing user to continue on login page.")
+          hasCompletedLogin = false
         }
     }
   }
 
-    val checkAuthCookies = { targetUrl: String? ->
-      val cookieManager = CookieManager.getInstance()
-      val musicCookie = cookieManager.getCookie("https://music.youtube.com")
-      val ytCookie = cookieManager.getCookie("https://www.youtube.com")
-      val accountsCookie = cookieManager.getCookie("https://accounts.youtube.com")
-      val currentCookie = if (!targetUrl.isNullOrEmpty()) cookieManager.getCookie(targetUrl) else null
+  val checkAuthCookies = { targetUrl: String? ->
+    val cookieManager = CookieManager.getInstance()
+    val musicCookie = cookieManager.getCookie("https://music.youtube.com")
+    val ytCookie = cookieManager.getCookie("https://www.youtube.com")
+    val accountsCookie = cookieManager.getCookie("https://accounts.youtube.com")
+    val currentCookie = if (!targetUrl.isNullOrEmpty()) cookieManager.getCookie(targetUrl) else null
 
-      val candidates = listOfNotNull(musicCookie, ytCookie, accountsCookie, currentCookie)
-      val authCandidate = candidates.firstOrNull { c ->
-        c.contains("SAPISID") || c.contains("__Secure-3PSID") || c.contains("LOGIN_INFO")
-      } ?: candidates.firstOrNull { it.contains("SID") }
-
-      if (authCandidate != null && !hasCompletedLogin) {
-        processSuccessfulAuth(authCandidate)
-      }
+    val candidates = listOfNotNull(musicCookie, ytCookie, accountsCookie, currentCookie)
+    val authCandidate = candidates.firstOrNull { c ->
+      c.contains("SAPISID") || c.contains("__Secure-3PSID") || c.contains("LOGIN_INFO")
     }
+
+    if (authCandidate != null && !hasCompletedLogin) {
+      processSuccessfulAuth(authCandidate)
+    }
+  }
 
     AndroidView(
       modifier = Modifier.windowInsetsPadding(LocalPlayerAwareWindowInsets.current).fillMaxSize(),
@@ -272,12 +242,12 @@ fun LoginScreen(navController: NavController) {
 
                 checkAuthCookies(failingUrl)
 
-                // If SetSID or accounts.youtube.com fails due to connection reset, Google has already authenticated!
-                // Redirect directly to music.youtube.com where the cookies take effect.
-                if (failingUrl.contains("SetSID", ignoreCase = true) || failingUrl.contains("accounts.youtube.com", ignoreCase = true)) {
+                // If SetSID fails due to connection reset on carrier networks, Google has already authenticated!
+                // Sniff the cookies and forward directly to music.youtube.com.
+                if (failingUrl.contains("SetSID", ignoreCase = true)) {
+                  checkAuthCookies("https://music.youtube.com")
                   view?.postDelayed({
                     if (!hasCompletedLogin) {
-                      checkAuthCookies("https://music.youtube.com")
                       view.loadUrl("https://music.youtube.com")
                     }
                   }, 500)
@@ -351,7 +321,7 @@ fun LoginScreen(navController: NavController) {
           cookieManager.setAcceptThirdPartyCookies(this, true)
           cookieManager.removeAllCookies(null)
           cookieManager.flush()
-          loadUrl("https://accounts.google.com/ServiceLogin?service=youtube&uilel=3&passive=true&continue=https%3A%2F%2Fwww.youtube.com%2Fsignin%3Faction_handle_signin%3Dtrue%26app%3Ddesktop%26hl%3Den%26next%3Dhttps%253A%252F%252Fmusic.youtube.com%252F")
+          loadUrl("https://accounts.google.com/ServiceLogin?continue=https%3A%2F%2Fmusic.youtube.com")
         }
       },
     )
