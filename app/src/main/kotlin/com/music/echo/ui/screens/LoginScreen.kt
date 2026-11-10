@@ -171,164 +171,207 @@ fun LoginScreen(navController: NavController) {
     }
   }
 
-  AndroidView(
-    modifier = Modifier.windowInsetsPadding(LocalPlayerAwareWindowInsets.current).fillMaxSize(),
-    factory = { webViewContext ->
-      WebView(webViewContext).apply {
-        webViewClient =
-          object : WebViewClient() {
-            override fun shouldOverrideUrlLoading(
-              view: WebView,
-              request: WebResourceRequest,
-            ): Boolean {
-              val url = request.url ?: return false
-              val host = url.host?.lowercase().orEmpty()
-              val scheme = url.scheme?.lowercase().orEmpty()
+    val checkAuthCookies = { targetUrl: String? ->
+      val cookieManager = CookieManager.getInstance()
+      val musicCookie = cookieManager.getCookie("https://music.youtube.com")
+      val ytCookie = cookieManager.getCookie("https://www.youtube.com")
+      val accountsCookie = cookieManager.getCookie("https://accounts.youtube.com")
+      val currentCookie = if (!targetUrl.isNullOrEmpty()) cookieManager.getCookie(targetUrl) else null
 
-              if (scheme != "http" && scheme != "https") {
+      val candidates = listOfNotNull(musicCookie, ytCookie, accountsCookie, currentCookie)
+      val authCandidate = candidates.firstOrNull { c ->
+        c.contains("SAPISID") || c.contains("__Secure-3PSID") || c.contains("LOGIN_INFO")
+      } ?: candidates.firstOrNull { it.contains("SID") }
+
+      if (authCandidate != null && !hasCompletedLogin) {
+        processSuccessfulAuth(authCandidate)
+      }
+    }
+
+    AndroidView(
+      modifier = Modifier.windowInsetsPadding(LocalPlayerAwareWindowInsets.current).fillMaxSize(),
+      factory = { webViewContext ->
+        WebView(webViewContext).apply {
+          webViewClient =
+            object : WebViewClient() {
+              override fun shouldOverrideUrlLoading(
+                view: WebView,
+                request: WebResourceRequest,
+              ): Boolean {
+                val url = request.url ?: return false
+                val urlString = url.toString()
+                val host = url.host?.lowercase().orEmpty()
+                val scheme = url.scheme?.lowercase().orEmpty()
+
+                checkAuthCookies(urlString)
+
+                if (scheme != "http" && scheme != "https") {
+                  try {
+                    context.startActivity(Intent(Intent.ACTION_VIEW, url))
+                  } catch (e: Exception) {
+                    Timber.w(e, "Cannot open scheme: $url")
+                  }
+                  return true
+                }
+
+                if (isAllowedLoginHost(host)) {
+                  return false
+                }
+
                 try {
                   context.startActivity(Intent(Intent.ACTION_VIEW, url))
                 } catch (e: Exception) {
-                  Timber.w(e, "Cannot open scheme: $url")
+                  Timber.w(e, "Cannot open external URL: $url")
                 }
                 return true
               }
 
-              if (isAllowedLoginHost(host)) {
-                return false
+              override fun onPageStarted(view: WebView?, url: String?, favicon: android.graphics.Bitmap?) {
+                super.onPageStarted(view, url, favicon)
+                checkAuthCookies(url)
               }
 
-              try {
-                context.startActivity(Intent(Intent.ACTION_VIEW, url))
-              } catch (e: Exception) {
-                Timber.w(e, "Cannot open external URL: $url")
-              }
-              return true
-            }
-
-            override fun onPageFinished(view: WebView, url: String?) {
-              if (url?.contains("youtube.com") == true) {
-                evaluateJavascript(
-                  "(function() { return (window.yt && window.yt.config_) ? window.yt.config_.VISITOR_DATA : ''; })();"
-                ) { value ->
-                  val unquoted = value?.removeSurrounding("\"")
-                  if (!unquoted.isNullOrEmpty() && unquoted != "null") {
-                    visitorData = unquoted
+              override fun onPageFinished(view: WebView, url: String?) {
+                super.onPageFinished(view, url)
+                if (url?.contains("youtube.com") == true) {
+                  evaluateJavascript(
+                    "(function() { return (window.yt && window.yt.config_) ? window.yt.config_.VISITOR_DATA : ''; })();"
+                  ) { value ->
+                    val unquoted = value?.removeSurrounding("\"")
+                    if (!unquoted.isNullOrEmpty() && unquoted != "null") {
+                      visitorData = unquoted
+                    }
                   }
-                }
-                evaluateJavascript(
-                  "(function() { return (window.yt && window.yt.config_) ? window.yt.config_.DATASYNC_ID : ''; })();"
-                ) { value ->
-                  val unquoted = value?.removeSurrounding("\"")
-                  if (!unquoted.isNullOrEmpty() && unquoted != "null") {
-                    dataSyncId = unquoted.substringBefore("||")
+                  evaluateJavascript(
+                    "(function() { return (window.yt && window.yt.config_) ? window.yt.config_.DATASYNC_ID : ''; })();"
+                  ) { value ->
+                    val unquoted = value?.removeSurrounding("\"")
+                    if (!unquoted.isNullOrEmpty() && unquoted != "null") {
+                      dataSyncId = unquoted.substringBefore("||")
+                    }
                   }
+                  loadUrl(
+                    "javascript:Android.onRetrieveVisitorData(window.yt && window.yt.config_ ? window.yt.config_.VISITOR_DATA : '')"
+                  )
+                  loadUrl(
+                    "javascript:Android.onRetrieveDataSyncId(window.yt && window.yt.config_ ? window.yt.config_.DATASYNC_ID : '')"
+                  )
                 }
-                loadUrl(
-                  "javascript:Android.onRetrieveVisitorData(window.yt && window.yt.config_ ? window.yt.config_.VISITOR_DATA : '')"
-                )
-                loadUrl(
-                  "javascript:Android.onRetrieveDataSyncId(window.yt && window.yt.config_ ? window.yt.config_.DATASYNC_ID : '')"
-                )
+
+                checkAuthCookies(url)
               }
 
-              val musicCookie = CookieManager.getInstance().getCookie("https://music.youtube.com")
-              val currentCookie = if (!url.isNullOrEmpty()) CookieManager.getInstance().getCookie(url) else null
-              val effectiveCookie = musicCookie ?: currentCookie
-
-              val isYouTubeMusic = url?.startsWith("https://music.youtube.com") == true
-              val hasAuthToken = effectiveCookie?.contains("SAPISID") == true ||
-                effectiveCookie?.contains("__Secure-3PSID") == true ||
-                effectiveCookie?.contains("LOGIN_INFO") == true
-
-              if ((isYouTubeMusic || (url?.contains("youtube.com") == true && hasAuthToken)) &&
-                !hasCompletedLogin &&
-                effectiveCookie != null
+              override fun onReceivedError(
+                view: WebView?,
+                request: WebResourceRequest?,
+                error: android.webkit.WebResourceError?,
               ) {
-                processSuccessfulAuth(effectiveCookie)
+                super.onReceivedError(view, request, error)
+                val failingUrl = request?.url?.toString().orEmpty()
+                Timber.w("Login WebView error ($failingUrl): ${error?.description}")
+
+                checkAuthCookies(failingUrl)
+
+                // If SetSID or accounts.youtube.com fails due to connection reset, Google has already authenticated!
+                // Redirect directly to music.youtube.com where the cookies take effect.
+                if (failingUrl.contains("SetSID", ignoreCase = true) || failingUrl.contains("accounts.youtube.com", ignoreCase = true)) {
+                  view?.postDelayed({
+                    if (!hasCompletedLogin) {
+                      checkAuthCookies("https://music.youtube.com")
+                      view.loadUrl("https://music.youtube.com")
+                    }
+                  }, 500)
+                }
               }
             }
-          }
 
-        webChromeClient =
-          object : WebChromeClient() {
-            override fun onCreateWindow(
-              view: WebView?,
-              isDialog: Boolean,
-              isUserGesture: Boolean,
-              resultMsg: Message?
-            ): Boolean {
-              val transport = resultMsg?.obj as? WebView.WebViewTransport ?: return false
-              transport.webView = view
-              resultMsg.sendToTarget()
-              return true
+          webChromeClient =
+            object : WebChromeClient() {
+              override fun onCreateWindow(
+                view: WebView?,
+                isDialog: Boolean,
+                isUserGesture: Boolean,
+                resultMsg: Message?
+              ): Boolean {
+                val transport = resultMsg?.obj as? WebView.WebViewTransport ?: return false
+                transport.webView = view
+                resultMsg.sendToTarget()
+                return true
+              }
+
+              override fun onConsoleMessage(consoleMessage: ConsoleMessage?): Boolean {
+                Timber.d("Login WebView: ${consoleMessage?.message()} [${consoleMessage?.sourceId()}:${consoleMessage?.lineNumber()}]")
+                return super.onConsoleMessage(consoleMessage)
+              }
             }
 
-            override fun onConsoleMessage(consoleMessage: ConsoleMessage?): Boolean {
-              Timber.d("Login WebView: ${consoleMessage?.message()} [${consoleMessage?.sourceId()}:${consoleMessage?.lineNumber()}]")
-              return super.onConsoleMessage(consoleMessage)
-            }
+          settings.apply {
+            javaScriptEnabled = true
+            domStorageEnabled = true
+            databaseEnabled = true
+            javaScriptCanOpenWindowsAutomatically = true
+            setSupportMultipleWindows(true)
+            allowFileAccess = false
+            allowContentAccess = false
+            setSupportZoom(true)
+            builtInZoomControls = true
+            displayZoomControls = false
+            mixedContentMode = WebSettings.MIXED_CONTENT_ALWAYS_ALLOW
+
+            // Mask embedded WebView signature so Google 2FA and modern auth flows execute without rejection
+            val defaultUa = userAgentString ?: WebSettings.getDefaultUserAgent(context)
+            userAgentString =
+              defaultUa
+                .replace("; wv", "")
+                .replace(Regex("Version/\\d+\\.\\d+\\s*"), "")
           }
 
-        settings.apply {
-          javaScriptEnabled = true
-          domStorageEnabled = true
-          databaseEnabled = true
-          javaScriptCanOpenWindowsAutomatically = true
-          setSupportMultipleWindows(true)
-          allowFileAccess = false
-          allowContentAccess = false
-          setSupportZoom(true)
-          builtInZoomControls = true
-          displayZoomControls = false
-          mixedContentMode = WebSettings.MIXED_CONTENT_COMPATIBILITY_MODE
+          addJavascriptInterface(
+            object {
+              @JavascriptInterface
+              fun onRetrieveVisitorData(newVisitorData: String?) {
+                if (newVisitorData != null) {
+                  visitorData = newVisitorData
+                }
+              }
 
-          // Mask embedded WebView signature so Google 2FA and modern auth flows execute without rejection
-          val defaultUa = userAgentString ?: WebSettings.getDefaultUserAgent(context)
-          userAgentString =
-            defaultUa
-              .replace("; wv", "")
-              .replace(Regex("Version/\\d+\\.\\d+\\s*"), "")
+              @JavascriptInterface
+              fun onRetrieveDataSyncId(newDataSyncId: String?) {
+                if (newDataSyncId != null) {
+                  dataSyncId = newDataSyncId.substringBefore("||")
+                }
+              }
+            },
+            "Android",
+          )
+          webView = this
+
+          val cookieManager = CookieManager.getInstance()
+          cookieManager.setAcceptCookie(true)
+          cookieManager.setAcceptThirdPartyCookies(this, true)
+          cookieManager.removeAllCookies(null)
+          cookieManager.flush()
+          loadUrl("https://accounts.google.com/ServiceLogin?service=youtube&uilel=3&passive=true&continue=https%3A%2F%2Fwww.youtube.com%2Fsignin%3Faction_handle_signin%3Dtrue%26app%3Ddesktop%26hl%3Den%26next%3Dhttps%253A%252F%252Fmusic.youtube.com%252F")
         }
+      },
+    )
 
-        addJavascriptInterface(
-          object {
-            @JavascriptInterface
-            fun onRetrieveVisitorData(newVisitorData: String?) {
-              if (newVisitorData != null) {
-                visitorData = newVisitorData
-              }
-            }
-
-            @JavascriptInterface
-            fun onRetrieveDataSyncId(newDataSyncId: String?) {
-              if (newDataSyncId != null) {
-                dataSyncId = newDataSyncId.substringBefore("||")
-              }
-            }
-          },
-          "Android",
-        )
-        webView = this
-
-        val cookieManager = CookieManager.getInstance()
-        cookieManager.setAcceptCookie(true)
-        cookieManager.setAcceptThirdPartyCookies(this, true)
-        cookieManager.removeAllCookies(null)
-        cookieManager.flush()
-        loadUrl("https://accounts.google.com/ServiceLogin?continue=https%3A%2F%2Fmusic.youtube.com")
+    TopAppBar(
+      title = { Text(stringResource(R.string.login)) },
+      navigationIcon = {
+        IconButton(onClick = navController::navigateUp, onLongClick = navController::backToMain) {
+          Icon(painterResource(R.drawable.arrow_back), contentDescription = null)
+        }
+      },
+      actions = {
+        IconButton(onClick = {
+          checkAuthCookies("https://music.youtube.com")
+          webView?.loadUrl("https://music.youtube.com")
+        }) {
+          Icon(painterResource(R.drawable.sync), contentDescription = "Reload")
+        }
       }
-    },
-  )
-
-  TopAppBar(
-    title = { Text(stringResource(R.string.login)) },
-    navigationIcon = {
-      IconButton(onClick = navController::navigateUp, onLongClick = navController::backToMain) {
-        Icon(painterResource(R.drawable.arrow_back), contentDescription = null)
-      }
-    },
-  )
+    )
 
   BackHandler(enabled = webView?.canGoBack() == true) { webView?.goBack() }
 }
