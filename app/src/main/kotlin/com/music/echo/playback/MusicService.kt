@@ -1975,7 +1975,6 @@ class MusicService : MediaLibraryService(), Player.Listener, PlaybackStatsListen
         }
       }
     }
-  }
 
   /**
    * Re-load the Cast queue from the local player when casting. Called after the full radio queue
