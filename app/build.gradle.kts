@@ -30,7 +30,7 @@ android {
   ndkVersion = "28.2.13676358"
 
   defaultConfig {
-    applicationId = "echo.music.iad1tya"
+    applicationId = "vibe.ntra.sr1va.music"
     minSdk = 26
     targetSdk = 36
     versionCode = 166
@@ -132,11 +132,11 @@ android {
       val keystoreFile = rootProject.file("keystore.jks")
       val localKeystore = file("keystore/release.keystore")
       val debugKeystore = file("${System.getProperty("user.home")}/.android/debug.keystore")
-      if (keystoreFile.exists() && !System.getenv("STORE_PASSWORD").isNullOrEmpty()) {
+      if (keystoreFile.exists()) {
         storeFile = keystoreFile
-        storePassword = System.getenv("STORE_PASSWORD")
-        keyAlias = System.getenv("KEY_ALIAS")
-        keyPassword = System.getenv("KEY_PASSWORD")
+        storePassword = System.getenv("STORE_PASSWORD") ?: "vibentra"
+        keyAlias = System.getenv("KEY_ALIAS") ?: "vibe.ntra.sr1va.music"
+        keyPassword = System.getenv("KEY_PASSWORD") ?: "vibentra"
       } else if (localKeystore.exists() && !System.getenv("STORE_PASSWORD").isNullOrEmpty()) {
         storeFile = localKeystore
         storePassword = System.getenv("STORE_PASSWORD")
@@ -150,10 +150,18 @@ android {
       }
     }
     getByName("debug") {
-      keyAlias = "androiddebugkey"
-      keyPassword = "android"
-      storePassword = "android"
-      storeFile = file("${System.getProperty("user.home")}/.android/debug.keystore")
+      val keystoreFile = rootProject.file("keystore.jks")
+      if (keystoreFile.exists()) {
+        storeFile = keystoreFile
+        storePassword = System.getenv("STORE_PASSWORD") ?: "vibentra"
+        keyAlias = System.getenv("KEY_ALIAS") ?: "vibe.ntra.sr1va.music"
+        keyPassword = System.getenv("KEY_PASSWORD") ?: "vibentra"
+      } else {
+        keyAlias = "androiddebugkey"
+        keyPassword = "android"
+        storePassword = "android"
+        storeFile = file("${System.getProperty("user.home")}/.android/debug.keystore")
+      }
     }
   }
 
