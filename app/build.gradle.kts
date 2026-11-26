@@ -33,8 +33,8 @@ android {
     applicationId = "vibe.ntra.sr1va.music"
     minSdk = 26
     targetSdk = 36
-    versionCode = 166
-    versionName = "1.4.5"
+    versionCode = 168
+    versionName = "1.4.6"
 
     testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     vectorDrawables.useSupportLibrary = true
